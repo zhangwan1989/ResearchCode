@@ -1,0 +1,36 @@
+posPath = 'E:\_learn\_research\Samples\DB47_18_36\pos_18_36\';
+negPath = 'E:\_learn\_research\Samples\DB47_18_36\neg_18_36\';
+posSize = 1000
+negSize = 1000
+winSize = [18,32];
+fid = fopen('data.txt', 'w');
+mydir = cd;
+newpath = [mydir,'\multiscaleHaar'];
+path(path,newpath);
+
+posfh = dir([posPath,'*.jpg'])
+for i = 1:posSize
+    img = imread([posPath,posfh(i).name]); 
+    HaarFeature = MultiScaleHaarCaculate(winSize, img, 'lbp','false');
+    dims = size(HaarFeature);
+    fprintf(fid, '1');
+    for j = 1:dims(2)
+        fprintf(fid, ',%f', HaarFeature(j));
+    end
+    fprintf(fid, '\n');
+end
+
+
+negfh = dir([negPath,'*.jpg']);
+for i = 1:negSize
+    img = imread([negPath,negfh(i).name]); 
+    HaarFeature = MultiScaleHaarCaculate(winSize, img, 'true');
+    dims = size(HaarFeature);
+    fprintf(fid, '0');
+    for j = 1:dims(2)
+        fprintf(fid, ',%f', HaarFeature(j));
+    end
+    fprintf(fid, '\n');
+end
+
+fclose(fid);

@@ -11,7 +11,10 @@ path(path,newpath);
 posfh = dir([posPath,'*.jpg'])
 for i = 1:posSize
     img = imread([posPath,posfh(i).name]); 
+    tic;
     HaarFeature = MultiScaleHaarCaculate(winSize, img, 'lbp','false');
+    toc;
+    HOGFeature = hog(single(img),8,9);
     dims = size(HaarFeature);
     fprintf(fid, '1');
     for j = 1:dims(2)

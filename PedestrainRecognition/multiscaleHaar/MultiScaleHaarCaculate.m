@@ -41,8 +41,8 @@ if strcmp(featureFlag,'haar')
             for x=2:winSize(1)-sizeX
                 for y=2:winSize(2)-sizeY
                     % for each width and length possible in frameSize
-                    for winWidth = sizeX*4:sizeX*2:winSize(1)-x
-                         for winHeight = sizeY*4:sizeY*2: winSize(2)-y;
+                    for winWidth = sizeX*4:sizeX*4:winSize(1)-x
+                         for winHeight = sizeY*4:sizeY*4: winSize(2)-y;
                              if (x+winWidth<=winSize(1)&&y+winHeight<=winSize(2))
                                  child_idx = child_idx + 1;
                                  disp('parent feature');
@@ -60,8 +60,8 @@ if strcmp(featureFlag,'haar')
 elseif strcmp(featureFlag,'lbp')
         for x=2:winSize(1)
             for y=2:winSize(2)
-                for winWidth = 1:winSize(1)/3
-                    for winHeight = 1:winSize(2)/3
+                for winWidth = 1:1:winSize(1)/3
+                    for winHeight = 1:1:winSize(2)/3
                         if(x+winWidth*3 <= winSize(1) && y+winHeight*3 <= winSize(2))
                             HaarFeature(feat_idx) = LBPFeatureCalc(intImg,x,y,winHeight,winWidth);
                             feat_idx = feat_idx + 1;

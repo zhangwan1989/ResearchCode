@@ -6,104 +6,71 @@ X=rgb2gray(image);
 if strcmp(multiScaleFlag, 'true')
 
     str_wave = 'db1'; % 小波基类型
-    [c,s] = wavedec2(X,2,'db1');%两层二维小波分解，使用db1小波
-    app1 = appcoef2(c,s,'db1',1);%取得第一层分解后的近似系数
-    [chd1,cvd1,cdd1] = detcoef2('all',c,s,1);%取得第一层分解后的各细节系数
-    app2 = appcoef2(c,s,'db1',2);%取得第二层分解后的近似系数
-    [chd2,cvd2,cdd2] = detcoef2('all',c,s,2);%取得第二层分解后的各细节系数
-    I_wave1=[mat2gray(app1),chd1;cvd1,cdd1];%第一层分解后系数
-    I_wave2=[mat2gray(app2),chd2;cvd2,cdd2];%第二层分解后系数
-    size_half = size(app1);
-    I_wave3=[I_wave2(1:size_half(1),1:size_half(2)),chd1;cvd1,cdd1];%二层分解后最终的全部系数   
-  
-    image2= uint8(app1);
-    image3= uint8(app2);
-    process_imgs = {X,image2,image3};
+    [C, S] = wavedec2(X, 2, str_wave);
+    % 得到近似分量
+    CA2 = appcoef2(C, S, str_wave, 2);
+    % 二层水平分量
+    CH2 = detcoef2('h', C, S, 2);
+    % 二层垂直分量
+    CV2 = detcoef2('v', C, S, 2);
+    % 二层对角线分量
+    CD2 = detcoef2('d', C, S, 2);
+    % 一层水平分量
+    CH1_2 = detcoef2('h', C, S, 1);
+    % 一层垂直分量
+    CV1_2 = detcoef2('v', C, S, 1);
+    % 一层对角线分量
+    CD1_2 = detcoef2('d', C, S, 1);
+    
+    process_imgs = {CA2 CH2 CV2 CD2 CH1_2 CV1_2 CD1_2};
 else 
     process_imgs = {X};
 end
 
-feat_idx = 1;
-intImg = IntImg(X);
-length = size(process_imgs);
-for id=1:length
-    cur_image = process_imgs{id};
-    intImg = IntImg(cur_image);
-    winSize = size(cur_image);
-    winWidth = winSize(2);
-    winHeight = winSize(1);
-    if strcmp(featureFlag,'haar')
-            % There are 5 rectangles associated with haar features
-            feature = [1 2; 2 1; 1 3; 3 1; 2 2];
-            for i = 1:5
-                sizeX = feature(i,1);   % length
-                sizeY = feature(i,2);   % width
-                % for all pixels inside the boundaries of our feature
-                child_idx = 0;
-                for x=2:winSize(1)-sizeX
-                    for y=2:winSize(2)-sizeY
-                        % for each width and length possible in frameSize
-                        for winWidth = sizeX*4:sizeX*4:winSize(1)-x
-                             for winHeight = sizeY*4:sizeY*4: winSize(2)-y;
-                                 if (x+winWidth<=winSize(1)&&y+winHeight<=winSize(2))
-                                     child_idx = child_idx + 1;
-                                     disp('parent feature');
-                                     i
-                                     disp('child feature');
-                                     child_idx
-                                     HaarFeature(feat_idx) = HaarFeatureCalc(intImg,x,y,winHeight,winWidth,i);
-                                     feat_idx = feat_idx + 1;
-                                 end
-                            end
-                        end
-                    end
-                end
-            end
-    elseif strcmp(featureFlag,'lbp')
-            for x=2:winWidth
-                for y=2:winHeightwinWidth
-                    for stepWidth = 1:2:winWidth/3
-                        for stepHeight = 1:2:winHeight/3
-                            if(x+stepWidth*3 <= winWidth && y+stepHeight*3 <= winHeight)
-                                HaarFeature(feat_idx) = LBPFeatureCalc(intImg,x,y,stepWidth,stepHeight);
-                                feat_idx = feat_idx + 1;
-                            end
-                        end
-                    end
-                end
-            end
-    elseif strcmp(featureFlag,'haar_lbp')
-             feature = [1 2; 2 1; 1 3; 3 1; 2 2];
-            for i = 1:5
-                sizeX = feature(i,1);   % length
-                sizeY = feature(i,2);   % width
-                % for all pixels inside the boundaries of our feature
-                child_idx = 0;
-                for x=2:winSize(1)-sizeX
-                    for y=2:winSize(2)-sizeY
-                        % for each width and length possible in frameSize
-                        for winWidth = sizeX*4:sizeX*2:winSize(1)-x
-                             for winHeight = sizeY*4:sizeY*2: winSize(2)-y;
-                                 if (x+winWidth<=winSize(1)&&y+winHeight<=winSize(2))
-                                     HaarFeature(feat_idx) = HaarFeatureCalc(intImg,x,y,winHeight,winWidth,i);
-                                     feat_idx = feat_idx + 1;
-                                 end
-                            end
-                        end
-                    end
-                end
-            end
-           for x=1:winSize(1)
-            for y=1:winSize(2)
-                for winWidth = 1:winSize(1)/3
-                    for winHeight = 1:winSize(2)/3
-                        if(x+winWidth*3 <= winSize(1) && y+winSize.height*3 <= winSize(2))
-                            HaarFeature(feat_idx) = LBPFeatureCalc(intImg,x,y,winHeight,winWidth);
-                            feat_idx = feat_idx + 1;
+
+if strcmp(featureFlag,'haar')
+        % There are 5 rectangles associated with haar features
+        feature = [1 2; 2 1; 1 3; 3 1; 2 2];
+        feat_idx = 1;
+        intImg = IntImg(image);
+        for i = 1:5
+            sizeX = feature(i,1);   % length
+            sizeY = feature(i,2);   % width
+            % for all pixels inside the boundaries of our feature
+            child_idx = 0;
+            for x=2:winSize(1)-sizeX
+                for y=2:winSize(2)-sizeY
+                    % for each width and length possible in frameSize
+                    for winWidth = sizeX*4:sizeX*2:winSize(1)-x
+                         for winHeight = sizeY*4:sizeY*2: winSize(2)-y;
+                             if (x+winWidth<=winSize(1)&&y+winHeight<=winSize(2))
+                                 child_idx = child_idx + 1;
+                                 disp('parent feature');
+                                 i
+                                 disp('child feature');
+                                 child_idx
+                                 HaarFeature(feat_idx) = HaarFeatureCalc(intImg,x,y,winHeight,winWidth,i);
+                                 feat_idx = feat_idx + 1;
+                             end
                         end
                     end
                 end
             end
         end
-    end
+elseif strcmp(featureFlag,'lbp')
+        feat_idx = 1;
+        intImg = IntImg(image);
+        for x=1:winSize(1)
+            for y=1:winSize(2)
+                for winWidth = 1:winSize(1)/3
+                    for winHeight = 1:winSize(2)/3
+                        if(x+3*)
+          for( int x = 0; x < winSize.width; x++ )
+        for( int y = 0; y < winSize.height; y++ )
+            for( int w = 1; w <= winSize.width / 3; w++ )
+                for( int h = 1; h <= winSize.height / 3; h++ )
+                    if ( (x+3*w <= winSize.width) && (y+3*h <= winSize.height) )
+                        features.push_back( Feature(offset, x, y, w, h ) );
+    
+elseif strcmp(featureFlag,'haar_lbp')
 end

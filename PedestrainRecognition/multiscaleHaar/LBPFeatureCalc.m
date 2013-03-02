@@ -1,14 +1,14 @@
 function [thresh] = LBPFeatureCalc(intImg,x,y,winWidth,winHeight)
 
 Rect0 = [x y winWidth winHeight];
-Rect1 = [x y+winWidth winWidth winHeight];
-Rect2 = [x y+winWidth*2 winWidth winHeight];
-Rect3 = [x+winHeight y winWidth winHeight];
-Rect4 = [x+winHeight y+winWidth winWidth winHeight];
-Rect5 = [x+winHeight y+winWidth*2 winWidth winHeight];
-Rect6 = [x+winHeight*2 y winWidth winHeight];
-Rect7 = [x+winHeight*2 y+winWidth winWidth winHeight];
-Rect8 = [x+winHeight*2 y+winWidth*2 winWidth winHeight];
+Rect1 = [x+winWidth y winWidth winHeight];
+Rect2 = [x+winWidth*2 y winWidth winHeight];
+Rect3 = [x y+winHeight winWidth winHeight];
+Rect4 = [x+winWidth y+winHeight winWidth winHeight];
+Rect5 = [x+winWidth*2 y+winHeight winWidth winHeight];
+Rect6 = [x y+winHeight*2 winWidth winHeight];
+Rect7 = [x+winWidth y+winHeight*2 winWidth winHeight];
+Rect8 = [x+winWidth*2 y+winHeight*2 winWidth winHeight];
 
 val0 = CalcIntRec(intImg,Rect0);
 val1 = CalcIntRec(intImg,Rect1);

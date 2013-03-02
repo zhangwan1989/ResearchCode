@@ -10,12 +10,11 @@ path(path,newpath);
 
 posfh = dir([posPath,'*.jpg'])
 for i = 1:posSize
-    i
     img = imread([posPath,posfh(i).name]); 
     tic;
-    HaarFeature = MultiScaleHaarCaculate(winSize, img, 'lbp','true');
+    HaarFeature = MultiScaleHaarCaculate(winSize, img, 'lbp','false');
     toc;
-    %HOGFeature = hog(single(img),8,9);
+    HOGFeature = hog(single(img),8,9);
     dims = size(HaarFeature);
     fprintf(fid, '1');
     for j = 1:dims(2)
@@ -27,11 +26,8 @@ end
 
 negfh = dir([negPath,'*.jpg']);
 for i = 1:negSize
-    i+posSize
     img = imread([negPath,negfh(i).name]); 
-    tic;
-    HaarFeature = MultiScaleHaarCaculate(winSize, img,'lbp', 'true');
-    toc;
+    HaarFeature = MultiScaleHaarCaculate(winSize, img, 'true');
     dims = size(HaarFeature);
     fprintf(fid, '0');
     for j = 1:dims(2)
